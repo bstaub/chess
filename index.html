@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schach</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>♔ Schach</h1>
+                <div class="status-bar">
+                    <span class="status-text" id="status">Weiß ist am Zug</span>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="game-wrapper">
+                <div class="board-container">
+                    <div id="board" class="board"></div>
+                </div>
+
+                <aside class="sidebar">
+                    <div class="info-panel">
+                        <h3>Spielinfo</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="label">Zug:</span>
+                                <span class="value" id="moveCount">1</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Spieler:</span>
+                                <span class="value" id="currentPlayer">Weiß</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="moves-panel">
+                        <h3>Züge</h3>
+                        <div id="moveHistory" class="move-history"></div>
+                    </div>
+
+                    <div class="controls">
+                        <button id="resetBtn" class="btn btn-primary">Neues Spiel</button>
+                        <button id="undoBtn" class="btn btn-secondary">Zurück</button>
+                    </div>
+                </aside>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
