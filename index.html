@@ -12,42 +12,121 @@
             <div class="header-content">
                 <h1>♔ Schach</h1>
                 <div class="status-bar">
-                    <span class="status-text" id="status">Weiß ist am Zug</span>
+                    <span class="status-text" id="status">Modus wählen</span>
                 </div>
             </div>
         </header>
 
         <main>
-            <div class="game-wrapper">
-                <div class="board-container">
-                    <div id="board" class="board"></div>
+            <!-- Modus-Menü -->
+            <div id="modeMenu" class="mode-menu">
+                <h2>Spielmodus wählen</h2>
+                <div class="mode-buttons">
+                    <button id="pvpBtn" class="mode-btn">
+                        <span class="mode-icon">👥</span>
+                        <span class="mode-title">Spieler vs Spieler</span>
+                    </button>
+                    <button id="pvcBtn" class="mode-btn">
+                        <span class="mode-icon">🤖</span>
+                        <span class="mode-title">Gegen Computer</span>
+                    </button>
+                    <button id="openingBtn" class="mode-btn">
+                        <span class="mode-icon">📚</span>
+                        <span class="mode-title">Eröffnungen lernen</span>
+                    </button>
                 </div>
+            </div>
 
-                <aside class="sidebar">
-                    <div class="info-panel">
-                        <h3>Spielinfo</h3>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <span class="label">Zug:</span>
-                                <span class="value" id="moveCount">1</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="label">Spieler:</span>
-                                <span class="value" id="currentPlayer">Weiß</span>
+            <!-- Schwierigkeitsstufen-Menü -->
+            <div id="difficultyMenu" class="difficulty-menu hidden">
+                <h2>Schwierigkeitsstufe wählen</h2>
+                <div class="difficulty-grid">
+                    <button class="difficulty-btn" data-difficulty="1">
+                        <span class="elo">800-1000</span>
+                        <span class="level">Anfänger</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="2">
+                        <span class="elo">1000-1200</span>
+                        <span class="level">Hobby</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="3">
+                        <span class="elo">1200-1400</span>
+                        <span class="level">Intermediär</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="4">
+                        <span class="elo">1400-1600</span>
+                        <span class="level">Fortgeschritten</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="5">
+                        <span class="elo">1600-1800</span>
+                        <span class="level">Meister</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="6">
+                        <span class="elo">1800+</span>
+                        <span class="level">Großmeister</span>
+                    </button>
+                </div>
+                <button id="backBtn" class="btn btn-secondary">Zurück</button>
+            </div>
+
+            <!-- Eröffnungen-Menü -->
+            <div id="openingMenu" class="opening-menu hidden">
+                <h2>Eröffnung wählen</h2>
+                <div class="opening-grid" id="openingGrid"></div>
+                <button id="openingBackBtn" class="btn btn-secondary">Zurück</button>
+            </div>
+
+            <!-- Spielbereich -->
+            <div id="gameArea" class="game-area hidden">
+                <div class="game-wrapper">
+                    <div class="board-container">
+                        <div class="board-wrapper">
+                            <div class="board-labels-left" id="boardLabelsLeft"></div>
+                            <div class="board-container-inner">
+                                <div class="board-top" id="boardLabelsTop"></div>
+                                <div id="board" class="board"></div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="moves-panel">
-                        <h3>Züge</h3>
-                        <div id="moveHistory" class="move-history"></div>
-                    </div>
+                    <aside class="sidebar">
+                        <div id="computerThinking" class="computer-thinking hidden">
+                            <span class="thinking-text">Computer denkt...</span>
+                            <span class="thinking-dots"></span>
+                        </div>
 
-                    <div class="controls">
-                        <button id="resetBtn" class="btn btn-primary">Neues Spiel</button>
-                        <button id="undoBtn" class="btn btn-secondary">Zurück</button>
-                    </div>
-                </aside>
+                        <div class="info-panel">
+                            <h3>Spielinfo</h3>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="label">Zug:</span>
+                                    <span class="value" id="moveCount">1</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Spieler:</span>
+                                    <span class="value" id="currentPlayer">Weiß</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="openingInfo" class="opening-info hidden">
+                            <h3>Eröffnung</h3>
+                            <div id="openingTitle" class="opening-title"></div>
+                            <div id="openingDesc" class="opening-desc"></div>
+                        </div>
+
+                        <div class="moves-panel">
+                            <h3>Züge</h3>
+                            <div id="moveHistory" class="move-history"></div>
+                        </div>
+
+                        <div class="controls">
+                            <button id="helpBtn" class="btn btn-secondary hidden-btn">💡 Hilfe</button>
+                            <button id="resetBtn" class="btn btn-primary">Neues Spiel</button>
+                            <button id="undoBtn" class="btn btn-secondary">Zurück</button>
+                        </div>
+                    </aside>
+                </div>
             </div>
         </main>
     </div>
