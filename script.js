@@ -2,7 +2,7 @@ const OPENINGS = [
     {
         name: 'Italienische Partie',
         goal: 'Schnelle Entwicklung mit Kontrolle über die Mitte. König zu e4, Lc4 ansteuern.',
-        moves: ['e2-e4', 'e7-e5', 'g1-f3', 'b8-c6', 'f1-c4', 'f8-c5', 'c2-c3', 'g8-f6', 'd2-d4', 'e5xd4']
+        moves: ['e2-e4', 'e7-e5', 'g1-f3', 'b8-c6', 'f1-c4', 'f8-c5', 'c2-c3', 'g8-f6', 'd2-d4', 'e5-d4']
     },
     {
         name: 'Spanische Partie (Ruy Lopez)',
@@ -12,12 +12,12 @@ const OPENINGS = [
     {
         name: 'Skandinavische Verteidigung',
         goal: 'Zentraler Gegenschlag. Schwarzer Gegenangriff auf d4 gleich nach e4.',
-        moves: ['e2-e4', 'd7-d5', 'e4xd5', 'd8xd5', 'b1-c3', 'd5-d8', 'g1-f3', 'c7-c6', 'f1-c4', 'c8-f5']
+        moves: ['e2-e4', 'd7-d5', 'e4→d5', 'd8→d5', 'b1-c3', 'd5-d8', 'g1-f3', 'c7-c6', 'f1-c4', 'c8-f5']
     },
     {
         name: 'Französische Verteidigung',
         goal: 'Solide Struktur mit langfristigen Plänen. e6 stärkt das Zentrum.',
-        moves: ['e2-e4', 'e7-e6', 'd2-d4', 'd7-d5', 'b1-c3', 'g8-f6', 'c1-g5', 'f8-e7', 'e4xd5', 'e6xd5']
+        moves: ['e2-e4', 'e7-e6', 'd2-d4', 'd7-d5', 'b1-c3', 'g8-f6', 'c1-g5', 'f8-e7', 'e4→d5', 'e6→d5']
     },
     {
         name: 'Sizilianische Verteidigung',
@@ -680,6 +680,7 @@ class ChessUI {
         this.computerThinking = false;
         this.showingHint = false;
         this.hintMove = null;
+        this.openingStartTime = null;
 
         this.boardElement = document.getElementById('board');
         this.statusElement = document.getElementById('status');
@@ -694,6 +695,7 @@ class ChessUI {
         this.difficultyMenu = document.getElementById('difficultyMenu');
         this.openingMenu = document.getElementById('openingMenu');
         this.gameArea = document.getElementById('gameArea');
+        this.completionModal = document.getElementById('completionModal');
 
         this.setupEventListeners();
         this.showModeMenu();
@@ -717,6 +719,10 @@ class ChessUI {
         this.resetBtn.addEventListener('click', () => this.resetGame());
         this.undoBtn.addEventListener('click', () => this.undoMove());
         this.helpBtn.addEventListener('click', () => this.showHint());
+
+        document.getElementById('nextOpeningBtn').addEventListener('click', () => this.playNextOpening());
+        document.getElementById('playNormalBtn').addEventListener('click', () => this.playNormalAfterOpening());
+        document.getElementById('backToMenuBtn').addEventListener('click', () => this.showModeMenu());
     }
 
     showModeMenu() {
@@ -724,6 +730,8 @@ class ChessUI {
         this.difficultyMenu.classList.add('hidden');
         this.openingMenu.classList.add('hidden');
         this.gameArea.classList.add('hidden');
+        this.completionModal.classList.add('hidden');
+        this.openingStartTime = null;
     }
 
     selectPvP() {
@@ -780,13 +788,16 @@ class ChessUI {
 
     startOpening(openingIndex) {
         this.currentOpening = OPENINGS[openingIndex];
+        this.currentOpeningIndex = openingIndex;
         this.openingMoveIndex = 0;
         this.gameMode = 'opening';
         this.game = new Chess();
         this.computer = null;
         this.showingHint = false;
         this.hintMove = null;
+        this.openingStartTime = Date.now();
 
+        this.completionModal.classList.add('hidden');
         this.openingMenu.classList.add('hidden');
         this.gameArea.classList.remove('hidden');
 
@@ -874,6 +885,7 @@ class ChessUI {
     updateOpeningStatus() {
         if (this.openingMoveIndex >= this.currentOpening.moves.length) {
             this.statusElement.textContent = '✓ Eröffnung abgeschlossen! Alle 10 Züge gelernt.';
+            this.showCompletionModal();
             return;
         }
 
@@ -885,6 +897,41 @@ class ChessUI {
         } else {
             this.statusElement.textContent = `${player} → Zug ${this.openingMoveIndex + 1}/10: ${expectedMove}`;
         }
+    }
+
+    showCompletionModal() {
+        const timeElapsed = Math.floor((Date.now() - this.openingStartTime) / 1000);
+        const minutes = Math.floor(timeElapsed / 60);
+        const seconds = timeElapsed % 60;
+        const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+        document.getElementById('openingName').textContent = this.currentOpening.name;
+        document.getElementById('statMoves').textContent = '10';
+        document.getElementById('statTime').textContent = timeString;
+        document.getElementById('completionMessage').textContent =
+            `Du hast die Züge der "${this.currentOpening.name}" erfolgreich gelernt!`;
+
+        // Show next opening suggestion
+        const nextIndex = (this.currentOpeningIndex + 1) % OPENINGS.length;
+        const nextOpening = OPENINGS[nextIndex];
+        if (nextIndex !== this.currentOpeningIndex) {
+            document.getElementById('nextSuggestion').style.display = 'block';
+            document.getElementById('nextOpeningName').textContent = `→ ${nextOpening.name}`;
+        }
+
+        this.completionModal.classList.remove('hidden');
+    }
+
+    playNextOpening() {
+        const nextIndex = (this.currentOpeningIndex + 1) % OPENINGS.length;
+        this.startOpening(nextIndex);
+    }
+
+    playNormalAfterOpening() {
+        this.gameMode = 'normal';
+        this.completionModal.classList.add('hidden');
+        this.statusElement.textContent = 'Freies Spiel - Spieler vs Spieler';
+        this.helpBtn.classList.remove('show');
     }
 
     showHint() {

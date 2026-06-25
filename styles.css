@@ -534,6 +534,195 @@ h3 {
     background: #c0c0c8;
 }
 
+/* Completion Modal */
+.completion-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+.completion-modal.hidden {
+    display: none !important;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.completion-content {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.completion-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.completion-header h2 {
+    font-size: 36px;
+    color: #0071e3;
+    margin: 0 0 10px 0;
+}
+
+.completion-subtitle {
+    font-size: 18px;
+    color: #6f6f77;
+    margin: 0;
+}
+
+.completion-body {
+    margin-bottom: 30px;
+}
+
+.completion-opening-name {
+    font-size: 22px;
+    font-weight: 600;
+    color: #1d1d1f;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.completion-stars {
+    text-align: center;
+    font-size: 48px;
+    letter-spacing: 10px;
+    margin-bottom: 25px;
+    animation: starsAppear 0.6s ease;
+}
+
+@keyframes starsAppear {
+    0% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 1; }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.star {
+    color: #FFD700;
+    display: inline-block;
+    animation: starPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.star:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.star:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+@keyframes starPop {
+    0% {
+        opacity: 0;
+        transform: scale(0) rotate(-180deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0);
+    }
+}
+
+.completion-stats {
+    background: #f5f5f7;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #e5e5e7;
+}
+
+.stat:last-child {
+    border-bottom: none;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #6f6f77;
+    font-weight: 500;
+}
+
+.stat-value {
+    font-size: 16px;
+    color: #1d1d1f;
+    font-weight: 600;
+}
+
+.completion-message {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.completion-message p {
+    font-size: 15px;
+    color: #1d1d1f;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.completion-next-suggestion {
+    background: #E8F5E9;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-left: 4px solid #4CAF50;
+}
+
+.completion-next-suggestion p {
+    font-size: 14px;
+    color: #1d1d1f;
+    margin: 5px 0;
+}
+
+.completion-next-suggestion p:first-child {
+    font-weight: 600;
+    margin-top: 0;
+}
+
+.completion-next-suggestion p:last-child {
+    margin-bottom: 0;
+}
+
+.completion-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.completion-buttons .btn {
+    width: 100%;
+}
+
 @media (max-width: 768px) {
     .game-wrapper {
         flex-direction: column;

@@ -76,6 +76,56 @@
                 <button id="openingBackBtn" class="btn btn-secondary">Zurück</button>
             </div>
 
+            <!-- Eröffnung-Abschluss Modal -->
+            <div id="completionModal" class="completion-modal hidden">
+                <div class="completion-content">
+                    <div class="completion-header">
+                        <h2>🎉 Gratuliere!</h2>
+                        <p class="completion-subtitle">Eröffnung abgeschlossen</p>
+                    </div>
+
+                    <div class="completion-body">
+                        <div id="openingName" class="completion-opening-name"></div>
+
+                        <div class="completion-stars" id="completionStars">
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                        </div>
+
+                        <div class="completion-stats">
+                            <div class="stat">
+                                <span class="stat-label">Züge gespielt:</span>
+                                <span class="stat-value" id="statMoves">10</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Spielzeit:</span>
+                                <span class="stat-value" id="statTime">--:--</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Schwierigkeit:</span>
+                                <span class="stat-value">Eröffnung Lernen</span>
+                            </div>
+                        </div>
+
+                        <div class="completion-message">
+                            <p id="completionMessage">Du hast die Züge dieser Eröffnung erfolgreich gelernt!</p>
+                        </div>
+
+                        <div class="completion-next-suggestion" id="nextSuggestion" style="display: none;">
+                            <p>📚 <strong>Nächste Empfehlung:</strong></p>
+                            <p id="nextOpeningName"></p>
+                        </div>
+                    </div>
+
+                    <div class="completion-buttons">
+                        <button id="nextOpeningBtn" class="btn btn-primary">Nächste Eröffnung</button>
+                        <button id="playNormalBtn" class="btn btn-secondary">Frei spielen</button>
+                        <button id="backToMenuBtn" class="btn btn-secondary">Menü</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Spielbereich -->
             <div id="gameArea" class="game-area hidden">
                 <div class="game-wrapper">
