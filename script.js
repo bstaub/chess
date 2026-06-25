@@ -497,6 +497,7 @@ class Chess {
         });
 
         this.currentPlayer = this.currentPlayer === 'white' ? 'black' : 'white';
+        return captured !== null;
     }
 
     undo() {
@@ -681,6 +682,9 @@ class ChessUI {
         this.showingHint = false;
         this.hintMove = null;
         this.openingStartTime = null;
+        this.audioContext = null;
+        this.capturedBlackElement = document.getElementById('capturedBlack');
+        this.capturedWhiteElement = document.getElementById('capturedWhite');
 
         this.boardElement = document.getElementById('board');
         this.statusElement = document.getElementById('status');
@@ -690,6 +694,7 @@ class ChessUI {
         this.resetBtn = document.getElementById('resetBtn');
         this.undoBtn = document.getElementById('undoBtn');
         this.helpBtn = document.getElementById('helpBtn');
+        this.backToOpeningsBtn = document.getElementById('backToOpeningsBtn');
 
         this.modeMenu = document.getElementById('modeMenu');
         this.difficultyMenu = document.getElementById('difficultyMenu');
@@ -719,6 +724,7 @@ class ChessUI {
         this.resetBtn.addEventListener('click', () => this.resetGame());
         this.undoBtn.addEventListener('click', () => this.undoMove());
         this.helpBtn.addEventListener('click', () => this.showHint());
+        this.backToOpeningsBtn.addEventListener('click', () => this.showOpeningMenu());
 
         document.getElementById('nextOpeningBtn').addEventListener('click', () => this.playNextOpening());
         document.getElementById('playNormalBtn').addEventListener('click', () => this.playNormalAfterOpening());
@@ -780,10 +786,12 @@ class ChessUI {
         this.gameArea.classList.remove('hidden');
         document.getElementById('openingInfo').classList.add('hidden');
         this.helpBtn.classList.remove('show');
+        this.backToOpeningsBtn.classList.remove('show');
 
         this.renderBoardLabels();
         this.render();
         this.updateUI();
+        this.updateCapturedPieces();
     }
 
     startOpening(openingIndex) {
@@ -807,10 +815,12 @@ class ChessUI {
         document.getElementById('openingDesc').textContent = this.currentOpening.goal;
 
         this.helpBtn.classList.add('show');
+        this.backToOpeningsBtn.classList.add('show');
 
         this.renderBoardLabels();
         this.render();
         this.updateUI();
+        this.updateCapturedPieces();
         this.updateOpeningStatus();
     }
 
@@ -831,11 +841,16 @@ class ChessUI {
                 this.game.selectedSquare = null;
                 this.game.validMoves = [];
             } else if (this.game.validMoves.some(m => m.row === row && m.col === col)) {
-                this.game.movePiece(selectedRow, selectedCol, row, col);
+                const isCapture = this.game.movePiece(selectedRow, selectedCol, row, col);
+                this.playMoveSound(isCapture);
+                if (isCapture) {
+                    this.playCaptureAnimation(row, col);
+                }
                 this.game.selectedSquare = null;
                 this.game.validMoves = [];
 
                 this.updateUI();
+                this.updateCapturedPieces();
 
                 if (this.gameMode === 'opening') {
                     this.checkOpeningMove();
@@ -872,12 +887,17 @@ class ChessUI {
         setTimeout(() => {
             const move = this.computer.getMove(this.game);
             if (move) {
-                this.game.movePiece(move.from.r, move.from.c, move.to.row, move.to.col);
+                const isCapture = this.game.movePiece(move.from.r, move.from.c, move.to.row, move.to.col);
+                this.playMoveSound(isCapture);
+                if (isCapture) {
+                    this.playCaptureAnimation(move.to.row, move.to.col);
+                }
             }
 
             this.computerThinking = false;
             document.getElementById('computerThinking').classList.add('hidden');
             this.updateUI();
+            this.updateCapturedPieces();
             this.render();
         }, 500);
     }
@@ -1006,6 +1026,7 @@ class ChessUI {
         this.game.validMoves = [];
         this.render();
         this.updateUI();
+        this.updateCapturedPieces();
     }
 
     renderBoardLabels() {
@@ -1101,6 +1122,116 @@ class ChessUI {
         });
 
         this.moveHistoryElement.scrollTop = this.moveHistoryElement.scrollHeight;
+    }
+
+    updateCapturedPieces() {
+        const capturedByBlack = [];
+        const capturedByWhite = [];
+
+        for (const move of this.game.moveHistory) {
+            if (move.captured) {
+                if (move.piece.color === 'white') {
+                    capturedByBlack.push(move.captured);
+                } else {
+                    capturedByWhite.push(move.captured);
+                }
+            }
+        }
+
+        // Anzeige aktualisieren
+        this.capturedBlackElement.innerHTML = '';
+        this.capturedWhiteElement.innerHTML = '';
+
+        capturedByBlack.forEach(piece => {
+            const pieceEl = document.createElement('span');
+            pieceEl.className = 'captured-piece';
+            pieceEl.textContent = this.game.getPieceEmoji(piece);
+            this.capturedBlackElement.appendChild(pieceEl);
+        });
+
+        capturedByWhite.forEach(piece => {
+            const pieceEl = document.createElement('span');
+            pieceEl.className = 'captured-piece';
+            pieceEl.textContent = this.game.getPieceEmoji(piece);
+            this.capturedWhiteElement.appendChild(pieceEl);
+        });
+    }
+
+    playCaptureAnimation(row, col) {
+        const square = this.boardElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+        if (!square) return;
+
+        // Entferne alte Animation, falls vorhanden
+        square.classList.remove('capture-animation');
+
+        // Erzwinge Reflow um die Animation neu zu starten
+        void square.offsetWidth;
+
+        square.classList.add('capture-animation');
+
+        // Entferne die Klasse nach der Animation
+        setTimeout(() => {
+            square.classList.remove('capture-animation');
+        }, 500);
+    }
+
+    playMoveSound(isCapture = false) {
+        try {
+            if (!this.audioContext) {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            const ctx = this.audioContext;
+            const now = ctx.currentTime;
+
+            if (isCapture) {
+                // Capture-Ton: tieferer, lauterer Sound
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const filter = ctx.createBiquadFilter();
+
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.exponentialRampToValueAtTime(250, now + 0.12);
+
+                filter.type = 'highpass';
+                filter.frequency.setValueAtTime(800, now);
+
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+
+                osc.start(now);
+                osc.stop(now + 0.12);
+            } else {
+                // Normaler Zug-Ton: kurzer, heller Click-Sound
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const filter = ctx.createBiquadFilter();
+
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, now);
+                osc.frequency.exponentialRampToValueAtTime(400, now + 0.08);
+
+                filter.type = 'highpass';
+                filter.frequency.setValueAtTime(1000, now);
+
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+
+                osc.start(now);
+                osc.stop(now + 0.08);
+            }
+        } catch (e) {
+            // Audio wird nicht unterstützt, ignorieren
+        }
     }
 }
 
